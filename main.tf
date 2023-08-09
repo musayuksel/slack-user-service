@@ -56,3 +56,23 @@ resource "aws_cognito_user_pool" "slack_user_pool" {
 
 
 }
+
+resource "aws_cognito_user_pool_client" "slack_client" {
+  name         = "slack_client"
+  user_pool_id = aws_cognito_user_pool.slack_user_pool.id
+
+  generate_secret               = false
+  refresh_token_validity        = 90
+  prevent_user_existence_errors = "ENABLED"
+  explicit_auth_flows = [
+    "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+    "ALLOW_USER_SRP_AUTH",
+  ]
+}
+
+resource "aws_cognito_user_pool_domain" "slack_domain" {
+  domain       = "slack"
+  user_pool_id = aws_cognito_user_pool.slack_user_pool.id
+}
